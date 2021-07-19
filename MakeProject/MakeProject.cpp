@@ -1,7 +1,6 @@
 #include "MakeProject.h"
 #include "QCoreApplication"
 #include <iostream>
-#include "ZipCoder.h"
 #include "XDir.h"
 #include <QFileDialog>
 #include <vector>
@@ -14,6 +13,7 @@
 using namespace std;
 CMakeProject::CMakeProject(QWidget *parent)
     : QWidget(parent)
+	, m_OutPutType(e_Dll)
 {
     ui.setupUi(this);
 
@@ -29,6 +29,9 @@ CMakeProject::CMakeProject(QWidget *parent)
 	connect(ui.InstallPathBtn, &QPushButton::clicked, this, &CMakeProject::SlotOpenInstallFile);
 	connect(ui.UIBox, &QCheckBox::clicked, this, &CMakeProject::SlotUICheckBox);
 
+	connect(ui.DllCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotOutPutCheckBox);
+	connect(ui.ExeCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotOutPutCheckBox);
+	connect(ui.LibCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotOutPutCheckBox);
 }
 
 void CMakeProject::resizeEvent(QResizeEvent* event)
@@ -80,6 +83,7 @@ void CMakeProject::SlotBuildProject()
 	std::string strSrcFilePath = qstrWorkDir.toLocal8Bit();
 	strSrcFilePath.append(strDLLName);
 	coder.SetExactInfo(strSrcFilePath, strDestDir);
+	coder.SetOutPutProjectType(m_OutPutType);
 	coder.Build();
 
 	QDesktopServices bs;
@@ -153,6 +157,34 @@ void CMakeProject::SlotUICheckBox()
 	else if (ui.UIBox->checkState() == Qt::Unchecked)
 	{
 		ui.QtBox->setCheckState(Qt::Unchecked);
+	}
+}
+
+void CMakeProject::SlotOutPutCheckBox()
+{
+	QCheckBox* senderCheckBox = qobject_cast<QCheckBox*>(sender());
+	if (nullptr == senderCheckBox)
+	{
+		return;
+	}
+	Qt::CheckState checkSt = senderCheckBox->checkState();
+	if (checkSt == Qt::Checked&&senderCheckBox == ui.DllCheckBox)
+	{
+		ui.LibCheckBox->setCheckState(Qt::Unchecked);
+		ui.ExeCheckBox->setCheckState(Qt::Unchecked);
+		m_OutPutType = e_Dll;
+	}
+	else if (checkSt == Qt::Checked && senderCheckBox == ui.ExeCheckBox)
+	{
+		ui.LibCheckBox->setCheckState(Qt::Unchecked);
+		ui.DllCheckBox->setCheckState(Qt::Unchecked);
+		m_OutPutType = e_Exe;
+	}
+	else if(checkSt == Qt::Checked && senderCheckBox == ui.LibCheckBox)
+	{
+		ui.DllCheckBox->setCheckState(Qt::Unchecked);
+		ui.ExeCheckBox->setCheckState(Qt::Unchecked);
+		m_OutPutType = e_Lib;
 	}
 }
 

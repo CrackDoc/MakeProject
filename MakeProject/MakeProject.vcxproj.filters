@@ -56,13 +56,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <QtTranslation Include="China_zh.ts">
-      <Filter>Translation Files</Filter>
-    </QtTranslation>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="China_zh.qm">
       <Filter>Resource Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <QtTranslation Include="China_zh.ts">
+      <Filter>Translation Files</Filter>
+    </QtTranslation>
   </ItemGroup>
 </Project>

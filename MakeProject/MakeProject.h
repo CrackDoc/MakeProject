@@ -5,6 +5,7 @@
 #include "flowlayout.h"
 #include <QMap>
 #include <QPair>
+#include "ZipCoder.h"
 
 class CMakeProject : public QWidget
 {
@@ -93,8 +94,19 @@ public slots:
      * @return   
     */
     void SlotUICheckBox();
+    /**
+     * @fn       SlotOutPutCheckBox
+     * @author   Crack
+     * @brief       
+     * @date     2021/7/19 13:13
+     * @param    
+     * @return   
+    */
+    void SlotOutPutCheckBox();
 private:
     Ui::CMakeProjectClass ui;
     FlowLayout* m_FlowLayOut;
     QMap<QString, QPair<QString,bool>> m_3dPatryMap;
+
+    E_ProjectType m_OutPutType;
 };

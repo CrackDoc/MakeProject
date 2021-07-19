@@ -12,7 +12,11 @@
 #include <QFile>
 
 using namespace std;
+
+const QString strOutPut[]
+= { "OUTPUT_TYPE dll","OUTPUT_TYPE exe","OUTPUT_TYPE lib" };
 CZipCoder::CZipCoder()
+	:m_eProjectType(e_Dll)
 {
 
 }
@@ -369,6 +373,8 @@ bool CZipCoder::Build()
 						QString qstrIDEPath = QString::fromLocal8Bit("\"D:/IDE/Utility/v142/x64\"");
 						
 						QByteArray dataArray((char*)szReadBuffer, BUFFER_SIZE);
+						// repalce dll
+						dataArray.replace(strOutPut[0], strOutPut[(int)m_eProjectType].toLocal8Bit().data());
 
 						dataArray.replace(qstrIDEPath, m_strInstallPath.c_str());
 
@@ -377,7 +383,6 @@ bool CZipCoder::Build()
 					else if (isInitCMakeList && qstrZipFName.contains("CMakeLists.txt") && !qstrZipFName.contains("UnitTest"))
 					{
 						QByteArray dataArray((char*)szReadBuffer, BUFFER_SIZE);
-
 						_3PartyItr it0 = m_3PatryLibMap.begin();
 						for (; it0 != m_3PatryLibMap.end(); ++it0)
 						{
@@ -490,4 +495,9 @@ void CZipCoder::SetExactInfo(const std::string& strFilePath, const std::string& 
 {
 	m_strFilePath = strFilePath;
 	m_strTempPath = strTempPath;
+}
+
+void CZipCoder::SetOutPutProjectType(E_ProjectType eType)
+{
+	m_eProjectType = eType;
 }
