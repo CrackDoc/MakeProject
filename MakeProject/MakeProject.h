@@ -7,6 +7,12 @@
 #include <QPair>
 #include "ZipCoder.h"
 
+enum E_ModuleType
+{
+    e_None = 0,
+    e_Module,
+    e_Plugin
+};
 class CMakeProject : public QWidget
 {
     Q_OBJECT
@@ -104,14 +110,32 @@ public slots:
     */
     void SlotOutPutCheckBox();
     /**
-     * @fn       SlotExportCheckBox
+     * @fn       SlotModuleCheckBox
      * @author   Crack
      * @brief       
      * @date     2021/7/19 23:15
      * @param    
      * @return   
     */
-    void SlotExportCheckBox();
+    void SlotModuleCheckBox();
+    /**
+     * @fn       SlotFreshCheckBox
+     * @author   Crack
+     * @brief       
+     * @date     2021/7/20 14:21
+     * @param    
+     * @return   
+    */
+    void SlotFreshCheckBox();
+    /**
+     * @fn       SlotPluginCheckBox
+     * @author   Crack
+     * @brief       
+     * @date     2021/7/20 14:38
+     * @param    
+     * @return   
+    */
+    void SlotPluginCheckBox();
 private:
     Ui::CMakeProjectClass ui;
     FlowLayout* m_FlowLayOut;
@@ -119,5 +143,5 @@ private:
 
     E_ProjectType m_OutPutType;
 
-    bool m_bOutPut;
+    E_ModuleType m_ModuleType;
 };

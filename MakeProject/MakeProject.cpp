@@ -14,7 +14,7 @@ using namespace std;
 CMakeProject::CMakeProject(QWidget *parent)
     : QWidget(parent)
 	, m_OutPutType(e_Dll)
-	, m_bOutPut(false)
+	, m_ModuleType(e_None)
 {
     ui.setupUi(this);
 
@@ -34,8 +34,12 @@ CMakeProject::CMakeProject(QWidget *parent)
 	connect(ui.ExeCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotOutPutCheckBox);
 	connect(ui.LibCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotOutPutCheckBox);
 
-	connect(ui.ExportCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotExportCheckBox);
-	
+	connect(ui.ModuleCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotModuleCheckBox);
+
+	connect(ui.FreshBtn, &QPushButton::clicked, this, &CMakeProject::SlotFreshCheckBox);
+
+
+	connect(ui.PluginCheckBox,&QCheckBox::clicked, this, &CMakeProject::SlotPluginCheckBox);
 }
 
 void CMakeProject::resizeEvent(QResizeEvent* event)
@@ -87,7 +91,7 @@ void CMakeProject::SlotBuildProject()
 		strDLLName = "/QtUICMAKE.dll";
 	}
 
-	if (m_bOutPut)
+	if (m_ModuleType == e_Module)
 	{
 		QString qstrOutput = QString::fromLocal8Bit(strDLLName.c_str());
 
@@ -95,6 +99,14 @@ void CMakeProject::SlotBuildProject()
 
 		strDLLName = qstrOutput.toLocal8Bit();
 
+	}
+	else if (m_ModuleType == e_Plugin)
+	{
+		QString qstrOutput = QString::fromLocal8Bit(strDLLName.c_str());
+
+		qstrOutput.replace(".dll", "Plugin.dll");
+
+		strDLLName = qstrOutput.toLocal8Bit();
 	}
 	std::string strSrcFilePath = qstrWorkDir.toLocal8Bit();
 	strSrcFilePath.append(strDLLName);
@@ -204,25 +216,66 @@ void CMakeProject::SlotOutPutCheckBox()
 	}
 }
 
-void CMakeProject::SlotExportCheckBox()
+void CMakeProject::SlotModuleCheckBox()
 {
-	Qt::CheckState checkSt = ui.ExportCheckBox->checkState();
+	Qt::CheckState checkSt = ui.ModuleCheckBox->checkState();
 	if (checkSt == Qt::Checked)
 	{
 		m_OutPutType = e_Lib;
-		m_bOutPut = true;
+		m_ModuleType = e_Module;
 		ui.DllCheckBox->setCheckState(Qt::Unchecked);
 		ui.ExeCheckBox->setCheckState(Qt::Unchecked);
 		ui.LibCheckBox->setCheckState(Qt::Checked);
+		ui.PluginCheckBox->setCheckState(Qt::Unchecked);
+
+		ui.DllCheckBox->setEnabled(false);
+		ui.ExeCheckBox->setEnabled(false);
+		ui.LibCheckBox->setEnabled(false);
 	}
 	else 
-	{
-		m_bOutPut = false;
+	{	
 		m_OutPutType = e_Dll;
+		m_ModuleType = e_None;
 		ui.DllCheckBox->setCheckState(Qt::Checked);
 		ui.ExeCheckBox->setCheckState(Qt::Unchecked);
 		ui.LibCheckBox->setCheckState(Qt::Unchecked);
+
+		ui.DllCheckBox->setEnabled(true);
+		ui.ExeCheckBox->setEnabled(true);
+		ui.LibCheckBox->setEnabled(true);
 	}
+}
+
+void CMakeProject::SlotFreshCheckBox()
+{
+	QString qStrLibDir = ui.InstallPathEdit->text();
+	UpdateLibModel(qStrLibDir);
+	UpdateLibView();
+}
+
+void CMakeProject::SlotPluginCheckBox()
+{
+	Qt::CheckState checkSt = ui.PluginCheckBox->checkState();
+	if (checkSt == Qt::Checked)
+	{
+		ui.ModuleCheckBox->setCheckState(Qt::Unchecked);
+		ui.DllCheckBox->setEnabled(false);
+		ui.ExeCheckBox->setEnabled(false);
+		ui.LibCheckBox->setEnabled(false);
+		m_ModuleType = e_Plugin;
+	}
+	else
+	{
+		m_ModuleType = e_None;
+		ui.DllCheckBox->setEnabled(true);
+		ui.ExeCheckBox->setEnabled(true);
+		ui.LibCheckBox->setEnabled(true);
+	
+	}
+	m_OutPutType = e_Dll;
+	ui.DllCheckBox->setCheckState(Qt::Checked);
+	ui.ExeCheckBox->setCheckState(Qt::Unchecked);
+	ui.LibCheckBox->setCheckState(Qt::Unchecked);
 }
 
 void CMakeProject::UpdateLibView()

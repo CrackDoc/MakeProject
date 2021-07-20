@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>579</width>
-    <height>319</height>
+    <width>741</width>
+    <height>353</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -63,7 +63,7 @@
     </widget>
    </item>
    <item row="7" column="6">
-    <widget class="QPushButton" name="LibAddBtn">
+    <widget class="QPushButton" name="FreshBtn">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -77,7 +77,7 @@
       </size>
      </property>
      <property name="text">
-      <string>Add</string>
+      <string>Fresh</string>
      </property>
     </widget>
    </item>
@@ -240,9 +240,16 @@
    <item row="1" column="4" colspan="3">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QCheckBox" name="ExportCheckBox">
+      <widget class="QCheckBox" name="ModuleCheckBox">
        <property name="text">
-        <string>EXPORT</string>
+        <string>MODULE</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="PluginCheckBox">
+       <property name="text">
+        <string>PLUGIN</string>
        </property>
       </widget>
      </item>
