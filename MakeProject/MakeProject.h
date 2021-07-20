@@ -103,10 +103,21 @@ public slots:
      * @return   
     */
     void SlotOutPutCheckBox();
+    /**
+     * @fn       SlotExportCheckBox
+     * @author   Crack
+     * @brief       
+     * @date     2021/7/19 23:15
+     * @param    
+     * @return   
+    */
+    void SlotExportCheckBox();
 private:
     Ui::CMakeProjectClass ui;
     FlowLayout* m_FlowLayOut;
     QMap<QString, QPair<QString,bool>> m_3dPatryMap;
 
     E_ProjectType m_OutPutType;
+
+    bool m_bOutPut;
 };

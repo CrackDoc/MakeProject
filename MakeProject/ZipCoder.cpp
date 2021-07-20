@@ -362,6 +362,7 @@ bool CZipCoder::Build()
 					if (qstrZipFName.contains("include") || qstrZipFName.contains("src"))
 					{
 						QByteArray dataArray((char*)szReadBuffer, BUFFER_SIZE);
+
 						dataArray.replace(qstrSrcZipName, m_strModulName.c_str());
 
 						nWirteSize = zipQFile.write(dataArray);

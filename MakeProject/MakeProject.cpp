@@ -14,6 +14,7 @@ using namespace std;
 CMakeProject::CMakeProject(QWidget *parent)
     : QWidget(parent)
 	, m_OutPutType(e_Dll)
+	, m_bOutPut(false)
 {
     ui.setupUi(this);
 
@@ -32,6 +33,9 @@ CMakeProject::CMakeProject(QWidget *parent)
 	connect(ui.DllCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotOutPutCheckBox);
 	connect(ui.ExeCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotOutPutCheckBox);
 	connect(ui.LibCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotOutPutCheckBox);
+
+	connect(ui.ExportCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotExportCheckBox);
+	
 }
 
 void CMakeProject::resizeEvent(QResizeEvent* event)
@@ -58,7 +62,9 @@ void CMakeProject::SlotBuildProject()
 		xDir0.create();
 	}
 	CZipCoder coder;
-	coder.SetModuleName(ui.ModuleNameEdit->text().toLocal8Bit().data());
+	QString qstrModuleName;
+	qstrModuleName = ui.ModuleNameEdit->text();
+	coder.SetModuleName(qstrModuleName.toLocal8Bit().data());
     coder.SetInstallPath(strInstallPath);
 
 	QMap<QString, QPair<QString, bool>>::iterator it0 = m_3dPatryMap.begin();
@@ -79,6 +85,16 @@ void CMakeProject::SlotBuildProject()
 	else if (ui.QtBox->checkState() == Qt::Checked && ui.UIBox->checkState() == Qt::Checked)
 	{
 		strDLLName = "/QtUICMAKE.dll";
+	}
+
+	if (m_bOutPut)
+	{
+		QString qstrOutput = QString::fromLocal8Bit(strDLLName.c_str());
+
+		qstrOutput.replace(".dll", "Module.dll");
+
+		strDLLName = qstrOutput.toLocal8Bit();
+
 	}
 	std::string strSrcFilePath = qstrWorkDir.toLocal8Bit();
 	strSrcFilePath.append(strDLLName);
@@ -185,6 +201,27 @@ void CMakeProject::SlotOutPutCheckBox()
 		ui.DllCheckBox->setCheckState(Qt::Unchecked);
 		ui.ExeCheckBox->setCheckState(Qt::Unchecked);
 		m_OutPutType = e_Lib;
+	}
+}
+
+void CMakeProject::SlotExportCheckBox()
+{
+	Qt::CheckState checkSt = ui.ExportCheckBox->checkState();
+	if (checkSt == Qt::Checked)
+	{
+		m_OutPutType = e_Lib;
+		m_bOutPut = true;
+		ui.DllCheckBox->setCheckState(Qt::Unchecked);
+		ui.ExeCheckBox->setCheckState(Qt::Unchecked);
+		ui.LibCheckBox->setCheckState(Qt::Checked);
+	}
+	else 
+	{
+		m_bOutPut = false;
+		m_OutPutType = e_Dll;
+		ui.DllCheckBox->setCheckState(Qt::Checked);
+		ui.ExeCheckBox->setCheckState(Qt::Unchecked);
+		ui.LibCheckBox->setCheckState(Qt::Unchecked);
 	}
 }
 
