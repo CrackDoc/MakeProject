@@ -30,6 +30,7 @@ CMakeProject::CMakeProject(QWidget *parent)
 	connect(ui.InstallPathBtn, &QPushButton::clicked, this, &CMakeProject::SlotOpenInstallFile);
 	connect(ui.UIBox, &QCheckBox::clicked, this, &CMakeProject::SlotUICheckBox);
 
+	connect(ui.QtBox, &QCheckBox::clicked, this, &CMakeProject::SlotQtCheckBox);
 	connect(ui.DllCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotOutPutCheckBox);
 	connect(ui.ExeCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotOutPutCheckBox);
 	connect(ui.LibCheckBox, &QCheckBox::clicked, this, &CMakeProject::SlotOutPutCheckBox);
@@ -108,6 +109,10 @@ void CMakeProject::SlotBuildProject()
 
 		strDLLName = qstrOutput.toLocal8Bit();
 	}
+	else if (m_ModuleType == e_QtPlugin)
+	{
+		strDLLName = "/QT_PLUGIN.dll";
+	}
 	std::string strSrcFilePath = qstrWorkDir.toLocal8Bit();
 	strSrcFilePath.append(strDLLName);
 	coder.SetExactInfo(strSrcFilePath, strDestDir);
@@ -185,6 +190,13 @@ void CMakeProject::SlotUICheckBox()
 	else if (ui.UIBox->checkState() == Qt::Unchecked)
 	{
 		ui.QtBox->setCheckState(Qt::Unchecked);
+	}
+
+	Qt::CheckState checkSt = ui.UIBox->checkState();
+	Qt::CheckState pluginSt = ui.PluginCheckBox->checkState();
+	if (pluginSt == Qt::Checked && checkSt == Qt::Checked)
+	{
+		m_ModuleType = e_QtPlugin;
 	}
 }
 
@@ -270,12 +282,31 @@ void CMakeProject::SlotPluginCheckBox()
 		ui.DllCheckBox->setEnabled(true);
 		ui.ExeCheckBox->setEnabled(true);
 		ui.LibCheckBox->setEnabled(true);
-	
+
+	}
+	if (ui.QtBox->checkState() == Qt::Checked || ui.UIBox->checkState() == Qt::Checked)
+	{
+		m_ModuleType = e_QtPlugin;
 	}
 	m_OutPutType = e_Dll;
 	ui.DllCheckBox->setCheckState(Qt::Checked);
 	ui.ExeCheckBox->setCheckState(Qt::Unchecked);
 	ui.LibCheckBox->setCheckState(Qt::Unchecked);
+}
+
+void CMakeProject::SlotQtCheckBox()
+{
+	Qt::CheckState checkSt = ui.QtBox->checkState();
+	Qt::CheckState pluginSt = ui.PluginCheckBox->checkState();
+	if (pluginSt == Qt::Checked && checkSt == Qt::Checked)
+	{
+		m_ModuleType = e_QtPlugin;
+	}
+}
+
+void CMakeProject::SlotUpdateCheckBoxState()
+{
+
 }
 
 void CMakeProject::UpdateLibView()

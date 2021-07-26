@@ -11,7 +11,8 @@ enum E_ModuleType
 {
     e_None = 0,
     e_Module,
-    e_Plugin
+    e_Plugin,
+    e_QtPlugin
 };
 class CMakeProject : public QWidget
 {
@@ -136,6 +137,27 @@ public slots:
      * @return   
     */
     void SlotPluginCheckBox();
+
+    /**
+   * @fn       SlotQtCheckBox
+   * @author   Crack
+   * @brief
+   * @date     2021/7/20 14:38
+   * @param
+   * @return
+  */
+    void SlotQtCheckBox();
+
+    /**
+     * @fn       SlotUpdateCheckBoxState
+     * @author   Crack
+     * @brief    更新导出状态
+     * @date     2021/7/26 13:02
+     * @param    
+     * @return   
+    */
+    void SlotUpdateCheckBoxState();
+
 private:
     Ui::CMakeProjectClass ui;
     FlowLayout* m_FlowLayOut;
