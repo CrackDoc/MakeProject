@@ -41,6 +41,8 @@ CMakeProject::CMakeProject(QWidget *parent)
 
 
 	connect(ui.PluginCheckBox,&QCheckBox::clicked, this, &CMakeProject::SlotPluginCheckBox);
+
+	connect(ui.OptionCheckBox, &QComboBox::currentTextChanged, this, &CMakeProject::SlotOptionChanged);
 }
 
 void CMakeProject::resizeEvent(QResizeEvent* event)
@@ -112,6 +114,11 @@ void CMakeProject::SlotBuildProject()
 	else if (m_ModuleType == e_QtPlugin)
 	{
 		strDLLName = "/QT_PLUGIN.dll";
+	}
+
+	if (ui.OptionCheckBox->currentText() == "QT_GUI_CLASS")
+	{
+		strDLLName = "/QtIxUI.dll";
 	}
 	std::string strSrcFilePath = qstrWorkDir.toLocal8Bit();
 	strSrcFilePath.append(strDLLName);
@@ -305,6 +312,11 @@ void CMakeProject::SlotQtCheckBox()
 }
 
 void CMakeProject::SlotUpdateCheckBoxState()
+{
+
+}
+
+void CMakeProject::SlotOptionChanged(const QString& text)
 {
 
 }

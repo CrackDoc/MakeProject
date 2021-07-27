@@ -158,6 +158,16 @@ public slots:
     */
     void SlotUpdateCheckBoxState();
 
+    /**
+     * @fn       SlotOptionChanged   
+     * @author   Crack
+     * @brief       
+     * @date     2021/7/27 10:23
+     * @param    
+     * @return   
+    */
+    void SlotOptionChanged(const QString &text);
+
 private:
     Ui::CMakeProjectClass ui;
     FlowLayout* m_FlowLayOut;
