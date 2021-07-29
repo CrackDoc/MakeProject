@@ -91,7 +91,8 @@ void CMakeProject::SlotBuildProject()
 	{
 		UpdateCmakeProject(ui.UpdatePathEdit->text(), libs);
 		QDesktopServices bs;
-		bs.openUrl(ui.UpdatePathEdit->text());
+		QString dir = ui.UpdatePathEdit->text();
+		bs.openUrl(dir);
 		return;
 	}
 	std::string strDLLName = "/IxCMAKE.dll";
@@ -405,9 +406,9 @@ void CMakeProject::UpdateCmakeProject(const QString& strWorkSpaceDir,QList<QStri
 
 		if (!stlu::fileExist(strNewFilePath.toLocal8Bit().data()))
 		{
-			QString strProject = strWorkSpaceDir + "/CMakeModules/FindProject.cmake";
+			QString strIxProject = strWorkSpaceDir + "/CMakeModules/FindIxProject.cmake";
 
-			QFile::copy(strProject, strNewFilePath);
+			QFile::copy(strIxProject, strNewFilePath);
 
 			QFile newFile(strNewFilePath);
 
@@ -419,7 +420,7 @@ void CMakeProject::UpdateCmakeProject(const QString& strWorkSpaceDir,QList<QStri
 
 			QFile::remove(strNewFilePath);
 
-			array.replace("Project", qstrName.toLocal8Bit().data());
+			array.replace("IxProject", qstrName.toLocal8Bit().data());
 
 			QFile repaceFile(strNewFilePath);
 
