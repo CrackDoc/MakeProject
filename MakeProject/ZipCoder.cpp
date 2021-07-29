@@ -430,9 +430,9 @@ bool CZipCoder::Build()
 
 		if(!stlu::fileExist(strNewFilePath.toLocal8Bit().data()))
 		{
-			QString strIxKernel = info.absoluteDir().absolutePath() + "/FindIxKernel.cmake";
+			QString strProject = info.absoluteDir().absolutePath() + "/FindProject.cmake";
 
-			QFile::copy(strIxKernel, strNewFilePath);
+			QFile::copy(strProject, strNewFilePath);
 
 			QFile newFile(strNewFilePath);
 
@@ -444,7 +444,7 @@ bool CZipCoder::Build()
 
 			QFile::remove(strNewFilePath);
 
-			array.replace("IxKernel", strName.c_str());
+			array.replace("Project", strName.c_str());
 
 			QFile repaceFile(strNewFilePath);
 

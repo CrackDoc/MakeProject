@@ -42,7 +42,8 @@ CMakeProject::CMakeProject(QWidget *parent)
 
 	connect(ui.PluginCheckBox,&QCheckBox::clicked, this, &CMakeProject::SlotPluginCheckBox);
 
-	connect(ui.OptionCheckBox, &QComboBox::currentTextChanged, this, &CMakeProject::SlotOptionChanged);
+	connect(ui.UpdatePathBtn, &QPushButton::clicked, this, &CMakeProject::SlotUpdateProjectDir);
+
 }
 
 void CMakeProject::resizeEvent(QResizeEvent* event)
@@ -52,6 +53,7 @@ void CMakeProject::resizeEvent(QResizeEvent* event)
 
 void CMakeProject::SlotBuildProject()
 {
+	// 如果是更新CMAKE 走这一步
 	std::string strInstallPath = ui.InstallPathEdit->text().toLocal8Bit();
 	IOx::XDir xDir(strInstallPath.c_str());
 
@@ -74,14 +76,23 @@ void CMakeProject::SlotBuildProject()
 	coder.SetModuleName(qstrModuleName.toLocal8Bit().data());
     coder.SetInstallPath(strInstallPath);
 
+	QList<QString> libs;
 	QMap<QString, QPair<QString, bool>>::iterator it0 = m_3dPatryMap.begin();
 	for (; it0 != m_3dPatryMap.end(); ++it0)
 	{
 		QPair<QString, bool>& pair = it0.value();
 		if (pair.second)
 		{
+			libs.push_back(it0.key().toLocal8Bit().data());
 			coder.Push3PartyLibrary(it0.key().toLocal8Bit().data(), pair.first.toLocal8Bit().data());
 		}
+	}
+	if (ui.UpdateCheckBox->checkState() == Qt::Checked)
+	{
+		UpdateCmakeProject(ui.UpdatePathEdit->text(), libs);
+		QDesktopServices bs;
+		bs.openUrl(ui.UpdatePathEdit->text());
+		return;
 	}
 	std::string strDLLName = "/IxCMAKE.dll";
 
@@ -171,6 +182,20 @@ void CMakeProject::SlotOpenInstallFile()
 		m_3dPatryMap.clear();
 		UpdateLibModel(dir);
 		UpdateLibView();
+	}
+}
+
+void CMakeProject::SlotUpdateProjectDir()
+{
+	QString qstrWorkDir = QCoreApplication::applicationDirPath();
+
+	QString dir = QFileDialog::getExistingDirectory(this, tr("Open Files"),
+		qstrWorkDir,
+		QFileDialog::ShowDirsOnly
+		| QFileDialog::DontResolveSymlinks);
+	if (!dir.isEmpty())
+	{
+		ui.UpdatePathEdit->setText(dir);
 	}
 }
 
@@ -315,12 +340,6 @@ void CMakeProject::SlotUpdateCheckBoxState()
 {
 
 }
-
-void CMakeProject::SlotOptionChanged(const QString& text)
-{
-
-}
-
 void CMakeProject::UpdateLibView()
 {
 	QLayoutItem* child;
@@ -346,8 +365,73 @@ void CMakeProject::UpdateLibView()
 		m_FlowLayOut->addWidget(checkBox);
 		qDirList << val0;
 	}
-	ui.LibCombbox->clear();
-	ui.LibCombbox->addItems(qDirList);
+}
+
+void CMakeProject::UpdateCmakeProject(const QString& strWorkSpaceDir,QList<QString> listLib)
+{
+	if (strWorkSpaceDir.isEmpty())
+	{
+		return;
+	}
+	QFileInfo info(strWorkSpaceDir);
+	QString projectName = info.baseName();
+
+	QString strCMakePath = strWorkSpaceDir + "/" + projectName +"/CMakeLists.txt";
+
+	QFile CMAKEFile(strCMakePath);
+
+	bool bSucc = CMAKEFile.open(QFile::WriteOnly | QFile::Append);
+	if (!bSucc)
+	{
+		return;
+	}
+	for (int i = 0; i < listLib.size();++i)
+	{
+		QString qstrName = listLib[i];
+		QString qstrModule = QString::fromLocal8Bit("find_package(%0)\n"
+			"if(%0_FOUND)\n"
+			"  include_directories(${%0_DIR}/include)\n"
+			"  link_directories(${%0_DIR}/lib)\n"
+			"  target_link_libraries(${PROJECT_NAME} debug ${%0_LIBRARY_DEBUG})\n"
+			"  target_link_libraries(${PROJECT_NAME} optimized ${%0_LIBRARY})\n"
+			"endif(%0_FOUND)\n").arg(qstrName);
+		QByteArray array;
+		array.append(qstrModule);
+		CMAKEFile.write(array);
+
+		QString strFileName = QString("Find") + qstrName + QString(".cmake");
+
+		QString strNewFilePath = strWorkSpaceDir + "/CMakeModules/" + strFileName;
+
+		if (!stlu::fileExist(strNewFilePath.toLocal8Bit().data()))
+		{
+			QString strProject = strWorkSpaceDir + "/CMakeModules/FindProject.cmake";
+
+			QFile::copy(strProject, strNewFilePath);
+
+			QFile newFile(strNewFilePath);
+
+			newFile.open(QFile::ReadWrite);
+
+			QByteArray array = newFile.readAll();
+
+			newFile.close();
+
+			QFile::remove(strNewFilePath);
+
+			array.replace("Project", qstrName.toLocal8Bit().data());
+
+			QFile repaceFile(strNewFilePath);
+
+			repaceFile.open(QFile::WriteOnly);
+
+			repaceFile.write(array);
+
+			repaceFile.close();
+		}
+	}
+	CMAKEFile.close();
+
 }
 
 void CMakeProject::UpdateLibModel(const QString& qstrLibDir)

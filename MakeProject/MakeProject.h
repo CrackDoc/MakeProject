@@ -50,6 +50,15 @@ public:
     */
     void UpdateLibView();
 
+    /**
+     * @fn       UpdateCmakeProject
+     * @author   Crack
+     * @brief       
+     * @date     2021/7/29 15:54
+     * @param    
+     * @return   
+    */
+    void UpdateCmakeProject(const QString& strWorkSpaceDir,QList<QString> listLib);
 protected:
     virtual void resizeEvent(QResizeEvent* event);
 
@@ -82,6 +91,16 @@ public slots:
     */
     void SlotOpenInstallFile();
 
+    /**
+     * @fn       SlotUpdateProjectDir
+     * @author   Crack
+     * @brief       
+     * @date     2021/7/29 15:49
+     * @param    
+     * @return   
+    */
+
+    void SlotUpdateProjectDir();
     /**
      * @fn       SlotSelectCheckBox();
      * @author   Crack
@@ -157,16 +176,6 @@ public slots:
      * @return   
     */
     void SlotUpdateCheckBoxState();
-
-    /**
-     * @fn       SlotOptionChanged   
-     * @author   Crack
-     * @brief       
-     * @date     2021/7/27 10:23
-     * @param    
-     * @return   
-    */
-    void SlotOptionChanged(const QString &text);
 
 private:
     Ui::CMakeProjectClass ui;
