@@ -364,6 +364,12 @@ bool CZipCoder::Build()
 						QByteArray dataArray((char*)szReadBuffer, BUFFER_SIZE);
 
 						dataArray.replace(qstrSrcZipName, m_strModulName.c_str());
+						
+						QString strExternModuleName = m_strModulName;
+						strExternModuleName.remove(0);
+						strExternModuleName.remove("Module");
+
+						dataArray.replace("__IxMdoule__", strExternModuleName.toStdString().c_str());
 
 						nWirteSize = zipQFile.write(dataArray);
 					}
