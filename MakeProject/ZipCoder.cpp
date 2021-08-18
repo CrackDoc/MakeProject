@@ -365,10 +365,8 @@ bool CZipCoder::Build()
 
 						dataArray.replace(qstrSrcZipName, m_strModulName.c_str());
 						
-						QString strExternModuleName = m_strModulName;
-						strExternModuleName.remove(0);
+						QString strExternModuleName = QString::fromLocal8Bit(m_strModulName.c_str());
 						strExternModuleName.remove("Module");
-
 						dataArray.replace("__IxMdoule__", strExternModuleName.toStdString().c_str());
 
 						nWirteSize = zipQFile.write(dataArray);
