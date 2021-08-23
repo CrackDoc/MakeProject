@@ -323,6 +323,22 @@ bool CZipCoder::Build()
 				return false;
 			}
 
+			if (strFile.contains("Model"))
+			{
+				QString strExternModuleName = QString::fromLocal8Bit(m_strModulName.c_str());
+				strExternModuleName.remove("Module");
+				strExternModuleName.append("Model");
+				if (strFile.contains("IIxCMAKEModel"))
+				{
+					QString strIxModel = QString("I%0").arg(strExternModuleName);
+					strFile.replace("IIxCMAKEModel", strIxModel);
+				}
+				else 
+				{
+					QString strIxModel = QString("%0").arg(strExternModuleName);
+					strFile.replace("IxCMAKEModel", strIxModel);
+				}
+			}
 			QFile zipQFile(strFile);
 			zipQFile.open(QFile::ReadWrite);
 
@@ -361,14 +377,38 @@ bool CZipCoder::Build()
 					qint64 nWirteSize;
 					if (qstrZipFName.contains("include") || qstrZipFName.contains("src"))
 					{
-						QByteArray dataArray((char*)szReadBuffer, BUFFER_SIZE);
-
-						dataArray.replace(qstrSrcZipName, m_strModulName.c_str());
-						
+					
+						QByteArray dataArray((char*)szReadBuffer, BUFFER_SIZE);						
 						QString strExternModuleName = QString::fromLocal8Bit(m_strModulName.c_str());
 						strExternModuleName.remove("Module");
-						dataArray.replace("__IxMdoule__", strExternModuleName.toStdString().c_str());
 
+						if (qstrZipFName.contains("Model"))
+						{
+							QString strExternModuleName = QString::fromLocal8Bit(m_strModulName.c_str());
+							strExternModuleName.remove("Module");
+							strExternModuleName.append("Model");
+							if (dataArray.contains("IIxCMAKEeModel"))
+							{
+								QString strIxModel = QString("I%0").arg(strExternModuleName);
+								dataArray.replace("IIxCMAKEModel", strIxModel.toLocal8Bit().data());
+							}
+							if (dataArray.contains("IxCMAKEModel"))
+							{
+								QString strIxModel = QString("%0").arg(strExternModuleName);
+								dataArray.replace("IxCMAKEModel", strIxModel.toLocal8Bit().data());
+							}
+							if(dataArray.contains("CIxCMAKEModel"))
+							{
+								QString strIxModel = QString("C%0").arg(strExternModuleName);
+								dataArray.replace("CIxCMAKEModel", strIxModel.toLocal8Bit().data());
+							}
+						}
+						else
+						{
+							dataArray.replace(qstrSrcZipName, m_strModulName.c_str());
+							dataArray.replace("__IxMdoule__", strExternModuleName.toStdString().c_str());
+						}
+						
 						nWirteSize = zipQFile.write(dataArray);
 					}
 					else if (qstrZipFName.contains("CMakeLists.txt") && !isInitCMakeList && !m_strInstallPath.empty())
