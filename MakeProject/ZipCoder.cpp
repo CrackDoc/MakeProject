@@ -382,12 +382,12 @@ bool CZipCoder::Build()
 						QString strExternModuleName = QString::fromLocal8Bit(m_strModulName.c_str());
 						strExternModuleName.remove("Module");
 
-						if (qstrZipFName.contains("Model"))
+						//if (qstrZipFName.contains("Model"))
 						{
 							QString strExternModuleName = QString::fromLocal8Bit(m_strModulName.c_str());
 							strExternModuleName.remove("Module");
 							strExternModuleName.append("Model");
-							if (dataArray.contains("IIxCMAKEeModel"))
+							if (dataArray.contains("IIxCMAKEModel"))
 							{
 								QString strIxModel = QString("I%0").arg(strExternModuleName);
 								dataArray.replace("IIxCMAKEModel", strIxModel.toLocal8Bit().data());
@@ -403,7 +403,7 @@ bool CZipCoder::Build()
 								dataArray.replace("CIxCMAKEModel", strIxModel.toLocal8Bit().data());
 							}
 						}
-						else
+						if(!qstrZipFName.contains("Model"))
 						{
 							dataArray.replace(qstrSrcZipName, m_strModulName.c_str());
 							dataArray.replace("__IxMdoule__", strExternModuleName.toStdString().c_str());
